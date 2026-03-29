@@ -246,18 +246,30 @@ export default function MapDashboard({ initialLocations }: MapDashboardProps) {
     setIsDeleting(true);
     setErrorMessage("");
     try {
-      const { error } = await supabase.from("locations").delete().eq("id", id);
+      const { data: deletedRows, error } = await supabase
+        .from("locations")
+        .delete()
+        .eq("id", id)
+        .select("id");
+
       if (error) {
         throw error;
+      }
+      if (!deletedRows?.length) {
+        setErrorMessage(
+          "ลบไม่สำเร็จ — ฐานข้อมูลไม่ลบแถว (มักเกิดจากยังไม่มีนโยบาย DELETE บนตาราง locations ใน Supabase ให้รัน policy ใน supabase/schema.sql)",
+        );
+        return;
       }
       setLocations((prev) => prev.filter((l) => l.id !== id));
       setSelectedLocationId((prev) => (prev === id ? null : prev));
       setPendingMapPoi(null);
       setMapSaveNotice("");
       setDeleteConfirmLocation(null);
-    } catch {
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : String(err);
       setErrorMessage(
-        "ลบข้อมูลไม่สำเร็จ — ตรวจสอบ Supabase (ต้องมีนโยบาย DELETE สำหรับตาราง locations) หรือลองใหม่",
+        `ลบข้อมูลไม่สำเร็จ — ตรวจสอบนโยบาย DELETE บน Supabase หรือลองใหม่ (${detail})`,
       );
     } finally {
       setIsDeleting(false);

@@ -2,6 +2,9 @@ import MapDashboard from "@/components/MapDashboard";
 import { createClient } from "@supabase/supabase-js";
 import type { LocationItem } from "@/lib/types";
 
+/** ดึงรายการจาก Supabase ทุกครั้งที่โหลด/รีเฟรช — ไม่ใช้ snapshot ตอน build */
+export const dynamic = "force-dynamic";
+
 async function getInitialLocations(): Promise<LocationItem[]> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;

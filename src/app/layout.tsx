@@ -11,7 +11,7 @@ const kanit = Kanit({
 
 export const metadata: Metadata = {
   title: "DTC - DevTest By Siranat.Ta",
-  description: "ค้นหา แสดงเส้นทาง และเพิ่มสถานที่บนแผนที่ด้วย Next.js + Supabase",
+  description: "เว็บแอปพลิเคชัน ค้นหา แสดงเส้นทาง และเพิ่มสถานที่บนแผนที่",
 };
 
 export default function RootLayout({
