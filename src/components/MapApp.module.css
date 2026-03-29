@@ -428,9 +428,34 @@
   cursor: wait;
 }
 
-.deleteLocationButton {
+.locationRowActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-top: 12px;
-  width: 100%;
+}
+
+.editLocationButton {
+  flex: 1;
+  min-width: 120px;
+  border: 1px solid #93c5fd;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.editLocationButton:hover {
+  background: #dbeafe;
+  border-color: #3b82f6;
+}
+
+.deleteLocationButton {
+  flex: 1;
+  min-width: 120px;
   border: 1px solid #fecaca;
   border-radius: 8px;
   background: #fff1f2;
@@ -444,6 +469,21 @@
 .deleteLocationButton:hover {
   background: #ffe4e6;
   border-color: #f87171;
+}
+
+.editLocationHint {
+  margin: -4px 0 12px;
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.editFormActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 4px;
 }
 
 .deleteConfirmCard {

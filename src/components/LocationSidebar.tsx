@@ -9,6 +9,7 @@ type LocationSidebarProps = {
   searchQuery: string;
   onSearchQueryChange: (value: string) => void;
   onSelectLocation: (locationId: string) => void;
+  onRequestEdit: (location: LocationItem) => void;
   onRequestDelete: (location: LocationItem) => void;
 };
 
@@ -29,6 +30,7 @@ export default function LocationSidebar({
   searchQuery,
   onSearchQueryChange,
   onSelectLocation,
+  onRequestEdit,
   onRequestDelete,
 }: LocationSidebarProps) {
   return (
@@ -107,13 +109,22 @@ export default function LocationSidebar({
                         <dd>{formatCreatedAt(location.created_at)}</dd>
                       </div>
                     </dl>
-                    <button
-                      type="button"
-                      className={styles.deleteLocationButton}
-                      onClick={() => onRequestDelete(location)}
-                    >
-                      ลบรายการนี้
-                    </button>
+                    <div className={styles.locationRowActions}>
+                      <button
+                        type="button"
+                        className={styles.editLocationButton}
+                        onClick={() => onRequestEdit(location)}
+                      >
+                        แก้ไข
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.deleteLocationButton}
+                        onClick={() => onRequestDelete(location)}
+                      >
+                        ลบรายการนี้
+                      </button>
+                    </div>
                   </div>
                 ) : null}
               </div>

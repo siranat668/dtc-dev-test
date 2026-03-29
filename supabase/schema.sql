@@ -30,6 +30,14 @@ for insert
 to anon, authenticated
 with check (true);
 
+drop policy if exists "public can update locations" on public.locations;
+create policy "public can update locations"
+on public.locations
+for update
+to anon, authenticated
+using (true)
+with check (true);
+
 drop policy if exists "public can delete locations" on public.locations;
 create policy "public can delete locations"
 on public.locations

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AddLocationForm from "./AddLocationForm";
+import EditLocationForm from "./EditLocationForm";
 import LocationSidebar from "./LocationSidebar";
 import MapView, { type MapViewHandle } from "./MapView";
 import styles from "./MapApp.module.css";
@@ -10,7 +11,13 @@ import {
   fetchPlaceForNewLocation,
   minimalLocationFromMapPoi,
 } from "@/lib/fetchPlaceForNewLocation";
-import type { FactoryLocation, LocationItem, NewLocationInput, PendingMapPoi } from "@/lib/types";
+import type {
+  FactoryLocation,
+  LocationItem,
+  NewLocationInput,
+  PendingMapPoi,
+  UpdateLocationTextInput,
+} from "@/lib/types";
 
 /** จุดอ้างอิงโรงงานบนแผนที่ (เส้นทาง / จุดศูนย์กลางเริ่มต้น) — ตั้งค่าในโค้ด ไม่ผ่าน env */
 const FACTORY_LOCATION: FactoryLocation = {
@@ -40,6 +47,7 @@ export default function MapDashboard({ initialLocations }: MapDashboardProps) {
   const [mapSaveNotice, setMapSaveNotice] = useState("");
   const [deleteConfirmLocation, setDeleteConfirmLocation] = useState<LocationItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [editingLocation, setEditingLocation] = useState<LocationItem | null>(null);
   const [errorMessage, setErrorMessage] = useState(
     initialLocations.length === 0 ? "ยังไม่มีข้อมูลสถานที่ หรือยังไม่ได้ตั้งค่า Supabase" : "",
   );
@@ -79,6 +87,27 @@ export default function MapDashboard({ initialLocations }: MapDashboardProps) {
   const handleRequestDelete = useCallback((location: LocationItem) => {
     setDeleteConfirmLocation(location);
   }, []);
+
+  const closeEditModal = useCallback(() => {
+    setEditingLocation(null);
+  }, []);
+
+  const handleRequestEdit = useCallback((location: LocationItem) => {
+    setEditingLocation(location);
+  }, []);
+
+  useEffect(() => {
+    if (!editingLocation) {
+      return;
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeEditModal();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [editingLocation, closeEditModal]);
 
   useEffect(() => {
     if (!deleteConfirmLocation) {
@@ -276,6 +305,44 @@ export default function MapDashboard({ initialLocations }: MapDashboardProps) {
     }
   };
 
+  const handleSaveLocationEdit = async (payload: UpdateLocationTextInput) => {
+    if (!editingLocation) {
+      return;
+    }
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) {
+      throw new Error("Supabase is not configured");
+    }
+    const id = editingLocation.id;
+    const { data, error } = await supabase
+      .from("locations")
+      .update({
+        name_th: payload.name_th,
+        type: payload.type,
+        address: payload.address,
+      })
+      .eq("id", id)
+      .select("id,name_th,type,address,lat,lng,created_at")
+      .single();
+
+    if (error) {
+      throw error;
+    }
+    if (!data) {
+      throw new Error("Update returned no row");
+    }
+
+    const updated: LocationItem = {
+      ...data,
+      lat: Number(data.lat),
+      lng: Number(data.lng),
+    };
+
+    setLocations((prev) => prev.map((l) => (l.id === id ? updated : l)));
+    setEditingLocation(null);
+    setErrorMessage("");
+  };
+
   return (
     <main ref={pageRootRef} className={styles.page}>
       <MapView
@@ -309,6 +376,7 @@ export default function MapDashboard({ initialLocations }: MapDashboardProps) {
           searchQuery={searchQuery}
           onSearchQueryChange={setSearchQuery}
           onSelectLocation={handleSidebarSelectLocation}
+          onRequestEdit={handleRequestEdit}
           onRequestDelete={handleRequestDelete}
         />
         {errorMessage ? <p className={styles.errorText}>{errorMessage}</p> : null}
@@ -369,6 +437,19 @@ export default function MapDashboard({ initialLocations }: MapDashboardProps) {
               onSubmitLocation={handleAddLocation}
               initialLat={addFormCoords?.lat}
               initialLng={addFormCoords?.lng}
+            />
+          </div>
+        </div>
+      ) : null}
+
+      {editingLocation ? (
+        <div className={styles.modalBackdrop} onClick={closeEditModal} role="presentation">
+          <div className={styles.modalCard} onClick={(event) => event.stopPropagation()}>
+            <EditLocationForm
+              key={editingLocation.id}
+              location={editingLocation}
+              onSave={handleSaveLocationEdit}
+              onCancel={closeEditModal}
             />
           </div>
         </div>

@@ -16,6 +16,13 @@ export type NewLocationInput = {
   lng: number;
 };
 
+/** แก้ไขได้เฉพาะข้อความ — พิกัดคงเดิม */
+export type UpdateLocationTextInput = {
+  name_th: string;
+  type: string;
+  address: string;
+};
+
 /** หมุด POI ของ Google ที่ผู้ใช้คลิกล่าสุด (สำหรับปุ่ม + บันทึกลง DB) */
 export type PendingMapPoi = {
   placeId: string;
