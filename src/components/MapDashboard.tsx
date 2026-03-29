@@ -12,23 +12,12 @@ import {
 } from "@/lib/fetchPlaceForNewLocation";
 import type { FactoryLocation, LocationItem, NewLocationInput, PendingMapPoi } from "@/lib/types";
 
-const fallbackFactoryLocation: FactoryLocation = {
+/** จุดอ้างอิงโรงงานบนแผนที่ (เส้นทาง / จุดศูนย์กลางเริ่มต้น) — ตั้งค่าในโค้ด ไม่ผ่าน env */
+const FACTORY_LOCATION: FactoryLocation = {
   name: "โรงงาน สตีลชลบุรีกรุ๊ป",
   lat: 13.67393,
   lng: 100.61104,
 };
-
-function readFactoryLocation(): FactoryLocation {
-  const lat = Number(process.env.NEXT_PUBLIC_FACTORY_LAT);
-  const lng = Number(process.env.NEXT_PUBLIC_FACTORY_LNG);
-  const name = process.env.NEXT_PUBLIC_FACTORY_NAME?.trim() || fallbackFactoryLocation.name;
-
-  if (Number.isNaN(lat) || Number.isNaN(lng)) {
-    return fallbackFactoryLocation;
-  }
-
-  return { name, lat, lng };
-}
 
 type MapDashboardProps = {
   initialLocations: LocationItem[];
@@ -56,8 +45,6 @@ export default function MapDashboard({ initialLocations }: MapDashboardProps) {
   );
 
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.trim() ?? "";
-
-  const factoryLocation = useMemo(() => readFactoryLocation(), []);
 
   const clearListSelection = useCallback(() => {
     setSelectedLocationId(null);
@@ -281,7 +268,7 @@ export default function MapDashboard({ initialLocations }: MapDashboardProps) {
     <main ref={pageRootRef} className={styles.page}>
       <MapView
         ref={mapViewRef}
-        factoryLocation={factoryLocation}
+        factoryLocation={FACTORY_LOCATION}
         locations={filteredLocations}
         selectedLocationId={selectedLocationId}
         onMarkerSelect={handleMarkerSelect}

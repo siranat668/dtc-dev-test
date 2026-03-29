@@ -32,10 +32,9 @@
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=...
-NEXT_PUBLIC_FACTORY_NAME=โรงงาน สตีลชลบุรีกรุ๊ป
-NEXT_PUBLIC_FACTORY_LAT=13.67393
-NEXT_PUBLIC_FACTORY_LNG=100.61104
 ```
+
+จุดอ้างอิงโรงงานบนแผนที่ตั้งในโค้ด (`MapDashboard.tsx` ค่าคงที่ `FACTORY_LOCATION`) ไม่ต้องตั้ง env
 
 Google Cloud ต้องเปิด API อย่างน้อย:
 - Maps JavaScript API
