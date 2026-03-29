@@ -1,0 +1,742 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  background: #eef4fb;
+  font-family: var(--font-kanit), ui-sans-serif, sans-serif;
+}
+
+.page:fullscreen {
+  min-height: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.page:-webkit-full-screen {
+  min-height: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* ปุ่มเต็มจอแบบครอบทั้งหน้า (แทน fullscreen เริ่มต้นของ Google ที่เต็มแค่ div แผนที่) */
+.mapPageFullscreenWrap {
+  margin: 10px;
+}
+
+.mapPageFullscreenBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 2px;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mapPageFullscreenBtn:hover {
+  background: #f5f5f5;
+}
+
+.mapPageFullscreenBtn:focus-visible {
+  outline: 2px solid #4285f4;
+  outline-offset: 2px;
+}
+
+.card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 12px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.floatingSidebar {
+  position: absolute;
+  left: 20px;
+  top: 16px;
+  width: min(480px, calc(100vw - 40px));
+  max-height: calc(100vh - 32px);
+  z-index: 10;
+}
+
+.sidebarCard {
+  /* แผงขาวเดียว: ค้นหา + รายการในคอนเทนเนอร์เดียว */
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.12);
+  overflow: hidden;
+}
+
+.searchWrap {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eef2f7;
+  background: #ffffff;
+}
+
+.searchField {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  display: flex;
+  pointer-events: none;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  color: #0f172a;
+}
+
+.searchInput,
+.input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 9px 11px 9px 36px;
+  font-size: 0.9375rem;
+  background: #ffffff;
+}
+
+.searchField .searchInput {
+  padding-left: 36px;
+}
+
+.searchInput:focus,
+.input:focus {
+  outline: 2px solid #93c5fd;
+  outline-offset: 1px;
+}
+
+.locationList {
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: calc(100vh - 168px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 10px 10px;
+  background: #ffffff;
+}
+
+.locationRow {
+  width: 100%;
+  text-align: left;
+  flex-shrink: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  font-size: 0.9375rem;
+  color: #0f172a;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.07);
+  transition:
+    background 0.12s ease,
+    box-shadow 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.locationRowHead {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  border-radius: 6px;
+}
+
+.locationRowHead:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.locationRowMain {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+}
+
+.locationRowDetails {
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #dbeafe;
+  width: 100%;
+  text-align: left;
+}
+
+.locationRowActive .locationRowDetails {
+  border-top-color: #93c5fd;
+}
+
+.locationDetailList {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.locationDetailRow {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 8px 10px;
+  align-items: start;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.locationDetailRow dt {
+  margin: 0;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.locationDetailRow dd {
+  margin: 0;
+  word-break: break-word;
+  color: #0f172a;
+}
+
+.locationRow:hover {
+  background: #fafbfc;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+  border-color: #dbe4ee;
+}
+
+.locationRowActive {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #93c5fd;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+}
+
+.rowChevron {
+  flex-shrink: 0;
+  font-size: 1.2rem;
+  line-height: 1;
+  font-weight: 300;
+  color: #94a3b8;
+  width: 1.25rem;
+  text-align: center;
+  display: inline-block;
+  transform-origin: 50% 55%;
+  transition: transform 0.18s ease;
+}
+
+/* ลูกศรเดียวกับชี้ขวา หมุน 90° → ชี้ลง (รูปตัว v) */
+.rowChevronOpen {
+  transform: rotate(90deg);
+}
+
+.locationRowActive .rowChevron {
+  color: #60a5fa;
+}
+
+.mapSection {
+  position: relative;
+  min-height: 100vh;
+}
+
+.mapCanvas {
+  min-height: 100vh;
+}
+
+.mapPlacementPinWrap {
+  position: absolute;
+  inset: 0;
+  z-index: 10001;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mapPlacementPin {
+  transform: translateY(-50%);
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.28));
+}
+
+.mapPlacementPinSvg {
+  display: block;
+  width: 44px;
+  height: auto;
+}
+
+/*
+ * จัดแถบลิขสิทธิ์/ข้อความด้านล่างให้กึ่งกลาง (โลโก้ Google มักอยู่ในแถบเดียวกัน)
+ * คลาสภายในแผนที่เป็นของ Google — ถ้าอัปเดต API แล้วเลย์เอาต์เปลี่ยน อาจต้องปรับ selector
+ */
+.mapCanvas :global(.gm-style-cc) {
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  text-align: center !important;
+  transform: none !important;
+  box-sizing: border-box;
+}
+
+/*
+ * InfoWindow: จัด padding ให้บาลานซ์ + ตัดช่องว่างล่าง/ซ้อน DOM ของ Google
+ * (รุ่น API ต่างกัน class อาจต่าง — ครอบหลาย selector)
+ */
+.mapCanvas :global(.gm-style-iw-c) {
+  /* ระยะหลักอยู่ที่ div เนื้อหาใน MapView — กันซ้ำกับ padding ชั้นนอก */
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.mapCanvas :global(.gm-style-iw-d) {
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.mapCanvas :global(.gm-style-iw-chr) {
+  display: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.mapCanvas :global(.gm-style-iw-tc) {
+  padding: 0 !important;
+}
+
+.mapCanvas :global(.gm-style-iw-a) {
+  padding: 0 !important;
+}
+
+.mapCanvas :global(.gm-style-iw-t) {
+  padding-bottom: 0 !important;
+}
+
+.routeInfoCard {
+  position: absolute;
+  right: 120px;
+  top: 120px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.15);
+  min-width: 170px;
+  z-index: 5;
+}
+
+.routeInfoCard h3 {
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.routeInfoCard p {
+  color: #1d4ed8;
+}
+
+.routeInfoCard small {
+  color: #64748b;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #334155;
+  font-size: 0.86rem;
+}
+
+.coordinatesRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.primaryButton {
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.primaryButton:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.secondaryButton {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #334155;
+  font-weight: 600;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.secondaryButton:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.dangerButton {
+  border: none;
+  border-radius: 8px;
+  background: #dc2626;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.dangerButton:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.deleteLocationButton {
+  margin-top: 12px;
+  width: 100%;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fff1f2;
+  color: #b91c1c;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.deleteLocationButton:hover {
+  background: #ffe4e6;
+  border-color: #f87171;
+}
+
+.deleteConfirmCard {
+  width: min(400px, calc(100vw - 32px));
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px 22px;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.18);
+  border: 1px solid #e2e8f0;
+}
+
+.deleteConfirmTitle {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.deleteConfirmText {
+  margin: 0 0 18px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #475569;
+}
+
+.deleteConfirmActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.floatingAddButton {
+  position: absolute;
+  /* ชิดมุมล่างขวา (เว้น safe area บนมือถือ) */
+  right: max(8px, env(safe-area-inset-right, 0px));
+  bottom: max(8px, env(safe-area-inset-bottom, 0px));
+  width: 56px;
+  height: 56px;
+  border: none;
+  border-radius: 999px;
+  /* น้ำเงินแบบ Google / Material */
+  background: #4285f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  /* เขียวสดชัด (ลดโทนเหลือง) คอนทราสต์กับน้ำเงิน */
+  color: #00e676;
+  box-shadow: 0 2px 8px rgba(26, 115, 232, 0.35);
+  cursor: pointer;
+  z-index: 10002;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* + ~50–55% เส้นผ่านศูนย์กลางวง 56px; กึ่งกลางจริง */
+.floatingAddSvg {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: block;
+  margin: 0;
+  pointer-events: none;
+}
+
+.floatingAddSaving {
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #b9f6ca;
+  letter-spacing: 0.12em;
+  transform: translateY(-1px);
+}
+
+/* มีหมุด POI ของ Google ที่เลือกแล้ว — กด + เพื่อบันทึกลงรายการ */
+.floatingAddButtonReady {
+  box-shadow:
+    0 0 0 3px rgba(0, 230, 118, 0.5),
+    0 2px 10px rgba(26, 115, 232, 0.45);
+  animation: floatingAddPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes floatingAddPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+.floatingAddButton:disabled {
+  opacity: 0.85;
+  cursor: wait;
+  animation: none;
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  display: grid;
+  place-items: center;
+  z-index: 20;
+}
+
+.modalCard {
+  width: min(560px, calc(100vw - 32px));
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.errorText {
+  color: #dc2626;
+  font-size: 0.86rem;
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: #fff1f2;
+  border-radius: 8px;
+}
+
+.geoHint {
+  margin-top: 8px;
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  color: #64748b;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.placementModeBanner,
+.pendingPoiBanner {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: max(76px, calc(56px + 12px + env(safe-area-inset-bottom, 0px)));
+  z-index: 10003;
+  max-width: min(520px, calc(100vw - 88px));
+  padding: 10px 14px;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.12);
+  pointer-events: none;
+}
+
+.placementModeBanner {
+  color: #7f1d1d;
+  background: rgba(254, 242, 242, 0.97);
+  border: 1px solid #fecaca;
+}
+
+.pendingPoiBanner {
+  color: #14532d;
+  background: rgba(236, 253, 245, 0.97);
+  border: 1px solid #86efac;
+}
+
+.infoText {
+  color: #1d4ed8;
+  font-size: 0.9rem;
+}
+
+.emptyText {
+  font-size: 0.9375rem;
+  color: #64748b;
+  margin: 0;
+  padding: 16px 12px;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px dashed #d1dae6;
+}
+
+.locationRowTitle {
+  min-width: 0;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ตำแหน่งผู้ใช้: วงขาว 16px วงน้ำเงินหายใจ 10–14px ศูนย์กลางเดียวกัน (scale จากฐาน 14px) */
+.userPulseRoot {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  z-index: 2500;
+  box-sizing: border-box;
+}
+
+.userPulseWhite {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.14);
+  overflow: hidden;
+}
+
+.userPulseBlue {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  border-radius: 50%;
+  background: #2563eb;
+  transform: translate(-50%, -50%) scale(0.714286); /* 10/14 */
+  transform-origin: center center;
+  animation: userPulseBreath 2.2s ease-in-out infinite;
+}
+
+@keyframes userPulseBreath {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(0.714286);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* แท็บเล็ต / จอปานกลาง: ไม่ดึงความกว้างเกือบเต็มจอ — เหลือพื้นที่แผนที่ด้านขวา/รอบๆ */
+@media (max-width: 1024px) {
+  .floatingSidebar {
+    width: min(420px, calc(100vw - 24px));
+    left: 12px;
+    top: 12px;
+    max-height: min(44vh, 400px);
+  }
+
+  .locationList {
+    max-height: min(220px, 30vh);
+  }
+}
+
+@media (max-width: 640px) {
+  .coordinatesRow {
+    grid-template-columns: 1fr;
+  }
+
+  .floatingSidebar {
+    width: min(300px, calc(100vw - 20px));
+    left: max(10px, env(safe-area-inset-left, 0px));
+    top: max(10px, env(safe-area-inset-top, 0px));
+    max-height: min(42vh, 300px);
+  }
+
+  .locationList {
+    max-height: min(200px, 28vh);
+  }
+
+  .routeInfoCard {
+    right: 12px;
+    top: 94px;
+  }
+}
+
+/*
+ * มือถือแนวตั้ง: แผงรายการชิดล่าง (เหนือปุ่ม +) ให้ด้านบน ~60% เป็นแผนที่
+ */
+@media (max-width: 480px) {
+  .floatingSidebar {
+    left: max(10px, env(safe-area-inset-left, 0px));
+    right: max(10px, env(safe-area-inset-right, 0px));
+    width: auto;
+    top: auto;
+    bottom: max(78px, calc(56px + 14px + env(safe-area-inset-bottom, 0px)));
+    max-height: min(42vh, 272px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .locationList {
+    max-height: min(160px, 24vh);
+  }
+
+  .placementModeBanner,
+  .pendingPoiBanner {
+    bottom: calc(78px + min(42vh, 272px) + 10px);
+    max-width: calc(100vw - 20px);
+    font-size: 0.78rem;
+    padding: 8px 10px;
+  }
+}
