@@ -27,8 +27,12 @@ type MapViewProps = {
   onClearListSelection?: () => void;
   onPendingPoiChange: (poi: PendingMapPoi | null) => void;
   userPosition: { lat: number; lng: number } | null;
-  /** โหมดเลือกจุด: หมุดแดงกลางจอ — ลากแผนที่แล้วกด + อีกครั้งเพื่อยืนยันพิกัด */
+  /** โหมดเลือกจุด: หมุดแดงกลางจอ — กดข้อความบนหมุดเพื่อเปิดฟอร์ม */
   placementModeActive?: boolean;
+  /** กดข้อความ "เพิ่มข้อมูลตำแหน่งนี้" บนหมุดแดง */
+  onPlacementConfirm?: () => void;
+  /** โหมดคลิก POI เพื่อบันทึก — ถ้า false คลิก POI แค่เปิด popup ไม่ตั้ง pending */
+  poiPickMode?: boolean;
   /**
    * ถ้ามี: ปิด fullscreen เริ่มต้นของแผนที่ แล้วใส่ปุ่มเต็มจอที่ครอบ element นี้ทั้งก้อน
    * (รายการซ้าย + ปุ่ม + ฯลฯ) แทนการเต็มจอแค่ div แผนที่
@@ -173,6 +177,8 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
     onPendingPoiChange,
     userPosition,
     placementModeActive = false,
+    onPlacementConfirm,
+    poiPickMode = false,
     fullscreenContainerRef,
   },
   ref,
@@ -297,6 +303,11 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
 
   const onClearListSelectionRef = useRef(onClearListSelection);
   const onPendingPoiChangeRef = useRef(onPendingPoiChange);
+  const poiPickModeRef = useRef(poiPickMode);
+
+  useEffect(() => {
+    poiPickModeRef.current = poiPickMode;
+  }, [poiPickMode]);
 
   const openStyledInfoWindow = useCallback(
     (options: {
@@ -702,21 +713,56 @@ const MapView = forwardRef<MapViewHandle, MapViewProps>(function MapView(
       {mapError ? <p className={styles.errorText}>{mapError}</p> : null}
       <div ref={mapElementRef} className={styles.mapCanvas} />
       {placementModeActive ? (
-        <div className={styles.mapPlacementPinWrap} aria-hidden>
-          <div className={styles.mapPlacementPin}>
-            <svg
-              className={styles.mapPlacementPinSvg}
-              viewBox="0 0 48 64"
-              xmlns="http://www.w3.org/2000/svg"
+        <div className={styles.mapPlacementPinWrap}>
+          <div className={styles.mapPlacementPinCluster}>
+            <button
+              type="button"
+              className={styles.mapPlacementPinLabelButton}
+              onClick={() => onPlacementConfirm?.()}
             >
-              <path
-                d="M24 2C12.42 2 3 11.2 3 22.6c0 12.8 19.2 37.9 20.25 39.35a1.8 1.8 0 0 0 1.5.85c.6 0 1.15-.3 1.5-.85C27.3 60.5 45 35.4 45 22.6 45 11.2 35.58 2 24 2z"
-                fill="#dc2626"
-                stroke="#b91c1c"
-                strokeWidth="1.25"
-              />
-              <circle cx="24" cy="22" r="6" fill="#ffffff" />
-            </svg>
+              เพิ่มข้อมูลตำแหน่งนี้
+            </button>
+            <div className={styles.mapPlacementPinBody}>
+              <span className={styles.mapPlacementPlusBadge} aria-hidden>
+                <svg
+                  className={styles.mapPlacementPlusBadgeSvg}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <line
+                    x1="12"
+                    y1="5"
+                    x2="12"
+                    y2="19"
+                    stroke="currentColor"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="5"
+                    y1="12"
+                    x2="19"
+                    y2="12"
+                    stroke="currentColor"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>
+              <svg
+                className={styles.mapPlacementPinSvg}
+                viewBox="0 0 48 64"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M24 2C12.42 2 3 11.2 3 22.6c0 12.8 19.2 37.9 20.25 39.35a1.8 1.8 0 0 0 1.5.85c.6 0 1.15-.3 1.5-.85C27.3 60.5 45 35.4 45 22.6 45 11.2 35.58 2 24 2z"
+                  fill="#dc2626"
+                  stroke="#b91c1c"
+                  strokeWidth="1.25"
+                />
+                <circle cx="24" cy="22" r="6" fill="#ffffff" />
+              </svg>
+            </div>
           </div>
         </div>
       ) : null}
