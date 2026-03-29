@@ -31,7 +31,6 @@ export type PendingMapPoi = {
 };
 
 export type FactoryLocation = {
-  name: string;
   lat: number;
   lng: number;
 };

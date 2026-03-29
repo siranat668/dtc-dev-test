@@ -19,9 +19,9 @@ import type {
   UpdateLocationTextInput,
 } from "@/lib/types";
 
-/** จุดอ้างอิงโรงงานบนแผนที่ (เส้นทาง / จุดศูนย์กลางเริ่มต้น) — ตั้งค่าในโค้ด ไม่ผ่าน env */
+//ตำแหน่งจุดกึ่งกลางจอ
 const FACTORY_LOCATION: FactoryLocation = {
-  name: "โรงงาน สตีลชลบุรีกรุ๊ป",
+  //ตำแหน่งอ้างอิงจากรูปตัวอย่าง
   lat: 13.67393,
   lng: 100.61104,
 };
