@@ -1,81 +1,42 @@
-# DTC Map Assignment
+# DTC DevTest Siranat.Ta
 
-เว็บแอปพลิเคชัน ค้นหา แสดงเส้นทาง และเพิ่มสถานที่บนแผนที่
+แอป Next.js: แผนที่ Google + รายการสถานที่จากฐานข้อมูลบน Supabase (เป็น PostgreSQL) — ค้นหา, เส้นทาง, เพิ่ม/แก้ไข/ลบจุด
 
-## Features
+## การทำงาน
 
-- แสดงรายการสถานที่จาก Supabase พร้อม marker บนแผนที่
-- ค้นหาจากชื่อสถานที่ / ประเภท / ที่อยู่
-- คลิกสถานที่เพื่อซูมและเปิดข้อมูล กด「เส้นทาง」เพื่อวาดเส้นจากตำแหน่งผู้ใช้
-- เพิ่มสถานที่ใหม่พร้อม validation (ชื่อ + lat/lng)
-- รองรับ layout แบบ desktop/mobile
+- โหลดข้อมูลครั้งแรก (SSR) : `src/app/page.tsx` — `select` จาก `locations` แล้วส่งเข้า `MapDashboard`
+- ฝั่ง client + state หลัก : `src/components/MapDashboard.tsx`
+- แผนที่, marker, Directions, POI : `src/components/MapView.tsx`
+- ไคลเอนต์ Supabase : `src/lib/supabaseClient.ts`
+- ดึงชื่อ/ที่อยู่จาก POI หรือ geocode : `src/lib/fetchPlaceForNewLocation.ts`
 
-## Tech Stack
+## ตั้งค่า Supabase
 
-- Next.js 16 (App Router) + TypeScript
-- Supabase (Postgres + RLS)
-- Google Maps JavaScript API + Directions API + Places API (New)
-- Deploy บน Vercel
+1. สร้างโปรเจกต์ใน [Supabase](https://supabase.com) แล้วเปิด SQL Editor
+2. วางและรันทั้งไฟล์ `supabase/schema.sql`
+   - สร้างตาราง `public.locations`: `id` (uuid), `name_th`, `type`, `address`, `lat`, `lng`, `created_at`
+   - เปิด RLS และ policy อ่าน/เพิ่ม/แก้/ลบ สำหรับ `anon` + `authenticated` (โปรเจกต์นี้ใช้ anon key จากเบราว์เซอร์)
+3. ใน Project Settings → API คัดลอก Project URL และ anon public key ไปใส่ env
 
-## 1) ตั้งค่าฐานข้อมูล Supabase
+ข้อมูลเริ่มต้น: ใส่แถวผ่านแอปหรือรัน `insert` ใน SQL ตามต้องการ — ไม่มีไฟล์ seed แยกใน repo
 
-1. เปิด Supabase SQL Editor
-2. รันไฟล์ `supabase/schema.sql` (สร้างตาราง + RLS policies)
+## Environment variables
 
-> ตารางหลัก: `locations` (`id`, `name_th`, `type`, `address`, `lat`, `lng`, `created_at`) — เพิ่มข้อมูลผ่านแอปหรือ SQL ตามต้องการ
+คัดลอก `.env.local.example` เป็น `.env.local`:
 
-## 2) ตั้งค่า Environment Variables
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
 
-คัดลอก `.env.local.example` เป็น `.env.local` แล้วกรอกค่าจริง:
+## Google Cloud (API ที่เกี่ยวข้อง)
 
-```bash
-NEXT_PUBLIC_SUPABASE_URL=...
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=...
-```
+เปิดใช้อย่างน้อย:
 
-จุดอ้างอิงโรงงานบนแผนที่ตั้งในโค้ด (`MapDashboard.tsx` ค่าคงที่ `FACTORY_LOCATION`) ไม่ต้องตั้ง env
+- Maps JavaScript API  
+- Directions API  
+- Places API (New) — ดึงข้อมูลจาก POI ตอนบันทึกจากหมุด Google  
+- Geocoding API — ทางสำรองเมื่อย้อนพิกัดเป็นที่อยู่  
 
-Google Cloud ต้องเปิด API อย่างน้อย:
-- Maps JavaScript API
-- Directions API
-- **Places API (New)** — ดึงชื่อร้าน/สถานีจากหมุด POI ตอนกด **+** (`Place.fetchFields` ในเบราว์เซอร์)
-- **Geocoding API** (แนะนำ) — ถ้า Places ยังไม่เปิดหรือถูกจำกัด แอปจะ**ย้อนพิกัดเป็นที่อยู่**เป็นทางสำรอง
+จำกัด key ให้ตรงกับ API ที่เปิด และใส่ referrer สำหรับ `localhost` + โดเมน production
 
-**คลิกหมุด POI บนแผนที่:** การ์ดข้อมูลมาตรฐานของ Google ยังแสดงตามปกติ จากนั้นปุ่ม **+** มุมล่างขวาจะเน้น (วงเรือง) — กดเพื่อบันทึกสถานที่นั้นเป็น marker ของเรา ถ้ายังไม่ได้คลิก POI ปุ่ม **+** จะเปิดฟอร์มเพิ่มสถานที่แบบกรอกมือ
-
-### ถ้าขึ้นข้อความว่าบันทึกพิกัดแล้วแต่ดึงชื่อไม่สำเร็จ
-
-1. ไปที่ [Google Cloud Console](https://console.cloud.google.com/) → **APIs & Services** → **Enabled APIs**  
-2. กด **+ ENABLE APIS AND SERVICES** แล้วค้นหา **Places API (New)** กดเปิดใช้ (ชื่อบางโปรเจกต์อาจขึ้นเป็น *Places API* แบบใหม่)  
-3. เปิด **Geocoding API** ด้วยถ้าต้องการทางสำรองย้อนพิกัด  
-4. ไปที่ **Credentials** → เลือก API key ที่ใช้ใน `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`  
-   - **API restrictions:** เลือก *Restrict key* แล้วติ๊กอย่างน้อย **Maps JavaScript API**, **Directions API**, **Places API (New)**, **Geocoding API**  
-   - **Application restrictions:** ถ้าใช้ *HTTP referrers* ให้ใส่ `http://localhost:3000/*` และ `http://127.0.0.1:3000/*` สำหรับ dev และโดเมนจริงตอน deploy  
-5. รอสักครู่แล้วรีเฟรชแอป — ในโหมด dev ดู **Console** ของเบราว์เซอร์ จะมี log ข้อความ error จาก Google ช่วยไล่ต่อ
-
-ถ้ายังใช้ API ไม่ได้ แอปจะ**บันทึกเฉพาะพิกัด**พร้อมชื่อชั่วคราวให้แก้ในรายการ
-
-## 3) รันโปรเจกต์ในเครื่อง
-
-```bash
-npm install
-npm run dev
-```
-
-เปิด `http://localhost:3000`
-
-## 4) Deploy บน Vercel
-
-1. Push โค้ดขึ้น Git repository
-2. Import โปรเจกต์ใน Vercel
-3. ใส่ env เดียวกับ `.env.local`
-4. Deploy
-
-## 5) เกณฑ์ตรวจรับก่อนส่งงาน
-
-- แผนที่แสดงได้ และมี marker ครบ
-- ค้นหาแล้วรายการกรองถูกต้อง
-- คลิก「เส้นทาง」แล้วแสดงเส้นทางจากตำแหน่งผู้ใช้
-- เพิ่มสถานที่ใหม่แล้วแสดงทันทีใน list/map
-- UI ใช้งานง่ายและ responsive
+รายละเอียดเวลา Places/Geocoding ล้มเหลว (ขั้นตอนเปิด API / ดู error ใน Console)
